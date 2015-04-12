@@ -1,12 +1,92 @@
-@font-face {
-    font-family: 'BebasNeue';
-    src: url('../../../font/BebasNeue/BebasNeue-webfont.eot');
-    src: url('../../../font/BebasNeue/BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../../../font/BebasNeue/BebasNeue-webfont.woff') format('woff'),
-         url('../../../font/BebasNeue/BebasNeue-webfont.ttf') format('truetype'),
-         url('../../../font/BebasNeue/BebasNeue-webfont.svg#bebas_neueregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
+body {
+    background-image: url('/res/pattern.png');
+    font-family: "Roboto Condensed";
+    font-weight: regular;
+    line-height: 32px;
+    padding: 32px;
+    color: #82C1BD;
 }
 
+span {
+    height: 32px;
+}
+
+#loader {
+    position:fixed;
+    top:calc(50% - 33px);
+    left:calc(50% - 33px);
+}
+
+.nounderline{
+    text-decoration: none !important
+}
+
+.tooltip-arrow {visibility: hidden;}
+.tooltip > .tooltip-inner {
+    border-radius: 0px;
+    background-color: #7DC986;
+}
+
+#main-panel {
+    height: 100%;
+    width: 321px;
+    margin-right: 31px;
+    -webkit-box-shadow: inset 1px 0 0 0 #7FBDB8, inset -1px 0 0 0 #7FBDB8;
+    -moz-box-shadow: inset 1px 0 0 0 #7FBDB8, inset -1px 0 0 0 #7FBDB8;
+    box-shadow: inset 1px 0 0 0 #7FBDB8, inset -1px 0 0 0 #7FBDB8;
+    background-color:rgba(0, 7, 8, 0.5);
+}
+
+.info-box {
+    height: 193px;
+    width: 353px;
+    margin-right: 31px;
+    margin-bottom: 31px;
+    padding: 8px;
+    /*border-left: 1px solid #555;*/
+
+    -webkit-box-shadow: inset 0 1px 0 0 #7FBDB8, inset 0 -1px 0 0 #7FBDB8;
+    -moz-box-shadow: inset 0 1px 0 0 #7FBDB8, inset 0 -1px 0 0 #7FBDB8;
+    box-shadow: inset 0 1px 0 0 #7FBDB8, inset 0 -1px 0 0 #7FBDB8;
+    background-color:rgba(0, 7, 8, 0.5);
+}
+
+.row{
+    overflow: hidden;
+}
+
+.data {
+    width: 66px;
+    position: absolute;
+    bottom: 32px;
+    right: 32px;
+}
+
+.data-left {
+    margin-left: -1px;
+}
+
+.data-outer {
+    width: 33px;
+    height: 97px;
+    border: 1px solid #7FBDB8;
+    overflow: hidden;
+
+    position: relative;
+}
+
+.data-inner, .data-inner div {
+    width: 100%;
+    overflow: hidden;
+    left: 0px;
+    position: absolute;
+}
+
+.data-inner {
+    border: 1px solid #BE5B2D;
+    border-top-width: 0;
+    background-color: #7DC986;
+
+    bottom: 0;
+    height: 0%;
+}

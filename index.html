@@ -1,156 +1,113 @@
 <head>
-	<!-- I externally sourced a lot of these files; downloading and hosting these locally shouldn't be an issue either. -->
+    <!-- I externally sourced a lot of these files; downloading and hosting these locally shouldn't be an issue either. -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" type="text/css" media="all" />
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href="//fonts.googleapis.com/css?family=Roboto+Condensed" rel='stylesheet' type='text/css'>
     <link href="//netdna.bootstrapcdn.com/bootswatch/3.2.0/darkly/bootstrap.min.css" rel="stylesheet">
 
-
+    <link rel="stylesheet" type="text/css" href="css/loaders.min.css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
     <script src="js/zabbix_library.js"></script>
-    <script src="js/jquery.circleprogress.js"></script>
-    <link rel="stylesheet" href="css/stylesheet.css" type="text/css"> <!-- This is to import the Bebas Neue font - which I believe is left over from a previous Bootstrap theme. You may be able to skip this -->
-
-    <style>
-        .nounderline{text-decoration: none !important}
-        body {
-            background-image: url('res/pattern.png');
-            font-family: "Open Sans";
-            padding: 32px;
-        }
-		/* This is for the jquery-circleprogress plugin */
-        .circle {
-            width: 100px;
-            margin: 6px 6px 20px;
-            display: inline-block;
-            position: relative;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        .circle canvas {
-            vertical-align: top;
-        }
-
-        .circle strong {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            line-height: 40px;
-            font-size: 26px;
-        }
-
-        .circle strong i {
-            font-style: normal;
-            font-size: 0.6em;
-            font-weight: normal;
-        }
-
-        .circle span {
-            display: block;
-            color: #aaa;
-            margin-top: 12px;
-        }
-
-
-
-		/* Left border for the server cells */
-
-        .col-md-3 {
-            margin-left: 0;
-            padding-left: 0px;
-            margin-right: 32px;
-            border-left: 1px solid #555;
-        }
-
-		/* This is for the freak-out-and-alert animation. It's done through CSS, but there are also jQuery UI plugins if you prefer those. */
-
-        .blink{
-            -webkit-animation: blink 700ms infinite alternate;
-            -moz-animation: blink 700ms infinite alternate;
-            -o-animation: blink 700ms infinite alternate;
-            animation: blink 700ms infinite alternate;
-            background-color: red;
-        }
-        @-webkit-keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        }
-        @-o-keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        }
-        @-moz-keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        }
-        @keyframes blink {
-            from { background:rgba(255, 0, 0, 1); }
-            to { background:rgba(255, 0, 0, 0); }
-        };
-
-
-
-        .row{
-            overflow: hidden;
-        }
-    </style>
+    <link rel="stylesheet" href="css/stylesheet.css" type="text/css">
 
     <title>Zabbix Monitoring System</title>
 </head>
 
 <body>
      <div class="content">
+        <div id="loader">
+            <div class="loader-inner ball-clip-rotate-multiple">
+               <div></div>
+               <div></div>
+            </div>
+         </div>
+        <div id="main-panel" class="col-md-3">
+        </div>
+
         <div class="container-fluid">
+            <div id="hosts-list" class="row">
+            </div>
+        </div>
+    </div>
 
 
-		<div id="hosts-list" class="row"></div>
+    <div id="template-info-box" class="col-md-3 info-box" style="display:none">
+        <h4 style="text-align: center; ">
+            <span id="host"></span><small> - <span id="os"></span></small>
+        </h4>
+        <div id="data" class="pull-right data">
+            <div class="pull-right data-left data-outer" data-toggle="tooltip" data-trigger="hover" title="RAM">
+                <div id="ram" class="ram data-inner" data-value=""></div>
+            </div>
+            <div class="pull-right data-outer" data-toggle="tooltip" data-trigger="hover" title="CPU">
+                <div id="cpu" class="cpu data-inner" data-value=""></div>
+            </div>
+        </div>
+        <span>CPU: <span id="cpupercent"></span> utilization</span><br/>
+        <span>RAM: <span id="ramused"></span>/<span id="ramtotal"></span> MB</span><br/>
+        <span>Ping: <span id="ping"></span>ms</span><br/>
+        <span>Network: <span id="netusage"></span>KBps</span>
+    </div>
 
-
+    <div id="template-main-panel" style="display:none">
+        <h4 style="text-align: center; ">
+            SYSTEM STATUS: <span id="status"></span>
+        </h4>
+        <span>TOTAL CPU: <span id="cputotal"></span> utilization</span><br/>
+        <span>TOTAL RAM: <span id="ramusedtotal"></span>/<span id="ramtotal"></span>MB</span>
+    </div>
 
 <script>
 
+var pallete = ["#3D4B38","#83D145","#BE5B2D","#82C1BD","#D8BD52","#7DC986","#807B3F"];
+
+function animateThings(time) {
+    $('[data-toggle="tooltip"]').tooltip({
+        'placement': 'top'
+    });
+
+    if (time === undefined)
+        time = 1500;
+    var skillBar = $(document).find('.data-inner');
+    skillBar.each(function() {
+        var skillVal = $(this).attr("data-value");
+        $(this).animate({
+            height: skillVal
+        }, time);
+    });
+}
+
 $(document).ready(function() {
+    animateThings();
+    gatherData();
+});
 
-
+function gatherData() {
     var zabbix = new $.zabbix ('https://z.xpw.us/zabbix/api_jsonrpc.php', 'anon', 'Jvd6P4jh8Rn4M5Ts');
     if(zabbix.getApiVersion() != '2.2.2') {
         throw new Error('Zabbix has been updated, check the new documentation then update the code and Zabbix api version');
-		//Long story short, I only wrote this for 2.2.2. I know the latest version is 2.4, and honestly, this MAY still work, but change it at your own risk
+        //Long story short, I only wrote this for 2.2.2. I know the latest version is 2.4, and honestly, this MAY still work, but change it at your own risk
     }
     zabbix.authenticate(); //this gives us our API key, which gets assigned to the zabbix object
 
-
-
-// Putting the mess that is filterHostsAndOutput into a setInterval would have been cruel and unusual to the maintenance programmer
-
-   filterHostsAndOutput(zabbix);
-   setInterval(function() { filterHostsAndOutput(zabbix) }, 18000);
-
-});
-
-
-
-
-
+    setTimeout(function(){
+        filterHostsAndOutput(zabbix);
+        setInterval(function() { filterHostsAndOutput(zabbix) }, 15000);
+    }, 500);
+}
 
 //I apologize for everything.
 
 function filterHostsAndOutput(zabbix) {
+    //console.log('kill me now');
     var hosts = zabbix.call('host.get', {
         "selectInventory": true,
         "selectItems": [
             "name",
             "lastvalue",
-            "units",
-            "itemid",
-            "lastclock",
-            "value_type",
-            "itemid"
+            "units"
         ],
         "output": "extend",
         "search" : {"host" : ""},
@@ -159,25 +116,29 @@ function filterHostsAndOutput(zabbix) {
     });
 
     var anError = 0;
-    $('#hosts-list').empty();
+
+    var totalMemFree = 0;
+    var totalMem = 0;
+    var totalCPU = 0;
+    var totalCPUCores = 0;
+    var totalProcesses = 0;
+
     $.each(hosts, function() {
 
-	//I hope you're not opposed to sloppy code, because this is a disaster.
         var thisHost = $(this);
         var thisHostObj = thisHost[0];
-        var processorCount = 0;
-        var loadTotals = 0;
-        thisHostObj.usedDiskSpacesPcts = new Array;
-        thisHostObj.totalDiskSpaces = new Array;
-        thisHostObj.usedDiskSpaces = new Array;
+
+        thisHostObj.avgCpuLoad = 0;
         thisHostObj.networkTraffic = 0;
         $.each(thisHostObj.items, function() { //Parse the statistics to human-readable.
-            if($(this)[0].name == 'Processor load (1 min average)' || $(this)[0].name == 'Processor load (1 min average per core)') {
-                processorCount++;
-                loadTotals += $(this)[0].lastvalue;
+            if($(this)[0].name == 'Processor load (1 min average)') {
+                thisHostObj.avgCpuLoad = parseFloat($(this)[0].lastvalue);
             }
-            if($(this)[0].name == 'Agent ping') {
+            if($(this)[0].name == 'Ping') {
                 thisHostObj.agentPing = $(this)[0].lastvalue;
+            }
+            if($(this)[0].name == 'CPU Count') {
+                thisHostObj.cpuCount = $(this)[0].lastvalue;
             }
             if($(this)[0].name == 'Free memory') {
                 thisHostObj.freeMem = $(this)[0].lastvalue / 1024 / 1024; //MB
@@ -191,16 +152,10 @@ function filterHostsAndOutput(zabbix) {
             if($(this)[0].name == 'Number of processes') {
                 thisHostObj.numProcesses = $(this)[0].lastvalue;
             }
-            if($(this)[0].name == 'Free disk space on $1 (percentage)') {
-                thisHostObj.usedDiskSpacesPcts.push(100 - $(this)[0].lastvalue); //GB
-            }
-            if($(this)[0].name == 'Used disk space on $1') {
-                thisHostObj.usedDiskSpaces.push(($(this)[0].lastvalue / 1024 / 1024 / 1024));
-            }
-            if($(this)[0].name == 'Total disk space on $1') {
-                thisHostObj.totalDiskSpaces.push(($(this)[0].lastvalue / 1024 / 1024 / 1024));
-            }
             if($(this)[0].name == 'Incoming network traffic on $1') {
+                thisHostObj.networkTraffic += ($(this)[0].lastvalue / 1024) / 8; // KBps
+            }
+            if($(this)[0].name == 'Outgoing network traffic on $1') {
                 thisHostObj.networkTraffic += ($(this)[0].lastvalue / 1024) / 8; // KBps
             }
             if($(this)[0].name == 'HTTP service is running' && $(this)[0].lastvalue == 0) {
@@ -209,6 +164,11 @@ function filterHostsAndOutput(zabbix) {
             }
 
         });
+
+        totalMemFree += thisHostObj.freeMem;
+        totalMem += thisHostObj.totalMem;
+        totalCPUCores += thisHostObj.cpuCount;
+        totalCPU += thisHostObj.avgCpuLoad;
 
         if (thisHostObj.error != '' && thisHostObj.error != 1) {
             thisHostObj.errorText = new String;
@@ -234,72 +194,60 @@ function filterHostsAndOutput(zabbix) {
                 thisHostObj.os = 'CentOS 7';
             } else if (thisHostObj.inventory.os.indexOf('el6') > -1) {
                 thisHostObj.os = 'CentOS 6.5';
-				//Feel free to roll your own OS stuff here as well! Don't feel restrained by my life choices!
             } else {
                 thisHostObj.os = thisHost[0].inventory.os;
             }
-        } else if (thisHostObj.name == 'Zabbix server') {
-		//We're using the Zabbix appliance which is built on SuSE Linux.
-            thisHostObj.os = 'OpenSUSE Linux'
         } else {
             thisHostObj.os = 'OS Unavailable';
         }
-		//Math
-        thisHostObj.avgCpuLoad = loadTotals / processorCount;
+
         thisHostObj.memPct = (thisHostObj.totalMem - thisHostObj.freeMem) / thisHostObj.totalMem;
-        var disks = new String;
-        var diskTopUsage = 0;
-        $.each(thisHostObj.totalDiskSpaces, function(key, value) {
-            disks += '<small>' + thisHostObj.usedDiskSpaces[key].toFixed(1) + 'G / ' + value.toFixed(1) + 'G (' + thisHostObj.usedDiskSpacesPcts[key].toFixed(1) + '%)</small><br/>';
-            if (diskTopUsage < thisHostObj.usedDiskSpacesPcts[key]) {
-                diskTopUsage = thisHostObj.usedDiskSpacesPcts[key];
-            }
-        });
-        var diskUsageClass = new String;
-        if (diskTopUsage && diskTopUsage > 90) {
-            diskUsageClass = 'panel-danger';
-        } else if (diskTopUsage && diskTopUsage > 75) {
-            diskUsageClass = 'panel-warning';
-        } else {
-            diskUsageClass = 'panel-default';
-        }
+        thisHostObj.agentPing = Math.round( thisHostObj.agentPing * 10 ) / 10;
+
         if(!thisHostObj.error) {
-			//Yes, this should have been done with a series of appends. Yes, I am bad at jQuery.
-            $('#hosts-list').append('<div class="col-md-3" id="' + thisHostObj.hostid +
-            '"><h4 style="text-align: center">' + thisHostObj.name + '<small> - ' + thisHostObj.os + '</small></h4><span class="circle" data-pct="' +
-            thisHostObj.avgCpuLoad + '"><strong></strong><span>CPU: ' + thisHostObj.numProcesses +
-            ' PROCS</span></span><div class="pull-right"><span class="circle" data-pct="' + thisHostObj.memPct +
-            '"><strong></strong><span>MEM: ' + ((thisHostObj.totalMem - thisHostObj.freeMem).toFixed(1)) + 'MB / ' +
-            thisHostObj.totalMem.toFixed(1) + 'MB' + '</span></span></div><br/><div class="row"><div class="col-md-6">PING: ' +
-            thisHostObj.agentPing + 'ms<br/>TRAFFIC: ' + thisHostObj.networkTraffic.toFixed(1) +
-            'KBps</div><div class="col-md-6"><span class="pull-right"><div class="panel-group" id="accordion-' + thisHostObj.hostid + '"><div class="panel ' + diskUsageClass + '"><div class="panel-heading"><div class="panel-title"><a data-toggle="collapse" data-parent="#accordion-' + thisHostObj.hostid + '" href="#collapser-' + thisHostObj.hostid + '">DISKS</a></div></div><div id="collapser-' + thisHostObj.hostid + '" class="panel-collapse collapse"><div class="panel-body">' + disks +
-            '</div></div></div></div></span></div></div></div>');
-            $('#ohgod').empty();
+            var info_box = $('#hosts-list').find('#'+thisHostObj.hostid);
+            if (info_box.length <= 0) {
+                info_box = $('#template-info-box').clone();
+                info_box.attr('id', thisHostObj.hostid);
+                info_box.appendTo('#hosts-list');
+            }
+
+            info_box.find('#host').text(thisHostObj.name);
+            info_box.find('#os').text(thisHostObj.os);
+            info_box.find('#ram').attr('data-value', (thisHostObj.memPct*100)+'%');
+            info_box.find('#ram').parent().attr('title', 'RAM: '+Math.round(thisHostObj.memPct*100)+'%');
+            info_box.find('#cpu').attr('data-value', (thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
+            info_box.find('#cpu').parent().attr('title', 'CPU: '+Math.round(thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
+            info_box.find('#cpupercent').text((Math.round(thisHostObj.avgCpuLoad/thisHostObj.cpuCount*1000)/10)+'%');
+            info_box.find('#ramused').text(((thisHostObj.totalMem - thisHostObj.freeMem).toFixed(1)));
+            info_box.find('#ramtotal').text(thisHostObj.totalMem.toFixed(1));
+            info_box.find('#ping').text(thisHostObj.agentPing);
+            info_box.find('#netusage').text(thisHostObj.networkTraffic.toFixed(1));
+            info_box.attr('style', '');
         } else {
             $('#hosts-list').append('<div class="col-md-3 blink" id="' + thisHostObj.hostid + '"><h3 style="text-align: center; font-weight: bolder">' +
                 thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
-         anError = 1;
+            anError = 1;
         }
 
-
+        animateThings();
 
 
     });
 
-    //Ok, now get alerts. If there is an alert display it at the top of the screen and flash the relevant host (by hostid). Klaxon that shit.
+    $('#loader').attr('style','display:none;');
 
-    $('.circle').each(function() {
-        $(this).circleProgress({
-            value: $(this).attr('data-pct'),
-            fill: {gradient: ['#1EB33C', '#F72323']},
-            thickness: 15
-        }).on('circle-animation-progress', function (event, progress, stepValue) {
-            $(this).find('strong').html(String((100 * stepValue).toFixed(1)) + '<i>%</i>');
-        });
-    });
+    if ($('#main-panel').find('#status').length <= 0) {
+        var main_panel = $('#template-main-panel').clone();
+        main_panel.attr('style', '');
+        main_panel.appendTo('#main-panel');
+
+        main_panel.find('#status').text('OK');
+        main_panel.find('#cputotal').text((totalCPU/totalCPUCores*100).toFixed(4)+'%');
+        main_panel.find('#ramusedtotal').text((totalMem-totalMemFree).toFixed(1));
+        main_panel.find('#ramtotal').text(totalMem.toFixed(1));
+    }
 
 
 }
 </script>
-
-<div class="text-muted">Original work by <a href="http://www.andrewletson.com">Andrew Letson</a></div>
