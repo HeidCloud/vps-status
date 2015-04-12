@@ -1,6 +1,6 @@
 body {
     background-image: url('/res/pattern.png');
-    font-family: "Roboto Condensed";
+    font-family: "Lato","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-weight: regular;
     line-height: 32px;
     padding: 32px;
