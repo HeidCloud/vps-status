@@ -160,12 +160,12 @@ function filterHostsAndOutput(zabbix) {
             info_box.find('#ramtotal').text(thisHostObj.totalMem.toFixed(0));
             info_box.find('#ping').text(thisHostObj.agentPing);
             info_box.find('#netusage').text(thisHostObj.networkTraffic.toFixed(1));
-            info_box.attr('style', '');
         } else {
             info_box.empty().append('<h3 style="text-align: center; font-weight: bolder">' +
                 thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4>');
             anError = 1;
         }
+        info_box.attr('style', '');
 
     });
 
