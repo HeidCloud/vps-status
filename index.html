@@ -23,7 +23,7 @@
                <div></div>
             </div>
          </div>
-        <div id="main-panel" class="col-md-3">
+        <div id="main-panel" class="col-md-2">
         </div>
 
         <div class="container-fluid">
@@ -218,9 +218,9 @@ function filterHostsAndOutput(zabbix) {
             info_box.find('#ram').parent().attr('title', 'RAM: '+Math.round(thisHostObj.memPct*100)+'%');
             info_box.find('#cpu').attr('data-value', (thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
             info_box.find('#cpu').parent().attr('title', 'CPU: '+Math.round(thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
-            info_box.find('#cpupercent').text((Math.round(thisHostObj.avgCpuLoad/thisHostObj.cpuCount*1000)/10)+'%');
-            info_box.find('#ramused').text(((thisHostObj.totalMem - thisHostObj.freeMem).toFixed(1)));
-            info_box.find('#ramtotal').text(thisHostObj.totalMem.toFixed(1));
+            info_box.find('#cpupercent').text((thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100).toFixed(2)+'%');
+            info_box.find('#ramused').text(((thisHostObj.totalMem - thisHostObj.freeMem).toFixed(2)));
+            info_box.find('#ramtotal').text(thisHostObj.totalMem.toFixed(0));
             info_box.find('#ping').text(thisHostObj.agentPing);
             info_box.find('#netusage').text(thisHostObj.networkTraffic.toFixed(1));
             info_box.attr('style', '');
@@ -229,9 +229,6 @@ function filterHostsAndOutput(zabbix) {
                 thisHostObj.name + '</h3><h4 style="font-weight: bolder">' + thisHostObj.errorText + '</h4></div>');
             anError = 1;
         }
-
-        animateThings();
-
 
     });
 
@@ -248,6 +245,7 @@ function filterHostsAndOutput(zabbix) {
         main_panel.find('#ramtotal').text(totalMem.toFixed(1));
     }
 
+    animateThings();
 
 }
 </script>
