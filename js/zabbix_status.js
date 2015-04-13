@@ -160,8 +160,10 @@ function filterHostsAndOutput(zabbix) {
             info_box.find('#os').text(thisHostObj.os);
             info_box.find('#ram').attr('data-value', (thisHostObj.memPct*100)+'%');
             info_box.find('#ram').parent().attr('title', 'RAM: '+Math.round(thisHostObj.memPct*100)+'%');
+            info_box.find('#ram').parent().attr('data-original-title', 'RAM: '+Math.round(thisHostObj.memPct*100)+'%');
             info_box.find('#cpu').attr('data-value', (thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
             info_box.find('#cpu').parent().attr('title', 'CPU: '+Math.round(thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
+            info_box.find('#cpu').parent().attr('data-original-title', 'CPU: '+Math.round(thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100)+'%');
             info_box.find('#cpupercent').text((thisHostObj.avgCpuLoad/thisHostObj.cpuCount*100).toFixed(2)+'%');
             info_box.find('#ramused').text(((thisHostObj.totalMem - thisHostObj.freeMem).toFixed(2)));
             info_box.find('#ramtotal').text(thisHostObj.totalMem.toFixed(0));
