@@ -149,6 +149,13 @@ function filterHostsAndOutput(zabbix) {
         }
         
         if(!thisHostObj.error) {
+            if (info_box.find('#host').length<=0) {
+                info_box.remove();
+                info_box = $('#template-info-box').clone();
+                info_box.attr('id', thisHostObj.hostid);
+                info_box.appendTo('#hosts-list');
+            }
+        
             info_box.find('#host').text(thisHostObj.name);
             info_box.find('#os').text(thisHostObj.os);
             info_box.find('#ram').attr('data-value', (thisHostObj.memPct*100)+'%');
