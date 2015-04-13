@@ -180,7 +180,6 @@ function filterHostsAndOutput(zabbix) {
 
     if ($('#main-panel').find('#status').length <= 0) {
         var main_panel = $('#template-main-panel').html();
-        main_panel.attr('style', '');
         $('#main-panel').empty();
         main_panel.appendTo('#main-panel');
 
