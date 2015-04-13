@@ -181,13 +181,14 @@ function filterHostsAndOutput(zabbix) {
     if ($('#main-panel').find('#status').length <= 0) {
         var main_panel = $('#template-main-panel').html();
         $('#main-panel').empty().html(main_panel);
-        main_panel = $('#main-panel');
-
-        main_panel.find('#status').text('OK');
-        main_panel.find('#cputotal').text((totalCPU/totalCPUCores*100).toFixed(4)+'%');
-        main_panel.find('#ramusedtotal').text((totalMem-totalMemFree).toFixed(1));
-        main_panel.find('#ramtotal').text(totalMem.toFixed(1));
     }
+    
+    var panel = $('#main-panel');
+
+    panel.find('#status').text('OK');
+    panel.find('#cputotal').text((totalCPU/totalCPUCores*100).toFixed(4)+'%');
+    panel.find('#ramusedtotal').text((totalMem-totalMemFree).toFixed(1));
+    panel.find('#ramtotal').text(totalMem.toFixed(1));
 
     animateThings();
 
