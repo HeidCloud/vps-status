@@ -180,8 +180,8 @@ function filterHostsAndOutput(zabbix) {
 
     if ($('#main-panel').find('#status').length <= 0) {
         var main_panel = $('#template-main-panel').html();
-        $('#main-panel').empty();
-        main_panel.appendTo('#main-panel');
+        $('#main-panel').empty().html(main_panel);
+        main_panel = $('#main-panel');
 
         main_panel.find('#status').text('OK');
         main_panel.find('#cputotal').text((totalCPU/totalCPUCores*100).toFixed(4)+'%');
